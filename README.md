@@ -1,1 +1,1 @@
-# Csikanok
+Core-link Kft.
