@@ -1,0 +1,574 @@
+RG_router
+
+
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname RG_router
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+
+
+int g0/0/0
+ip add 10.10.100.1 255.255.255.252
+des RG_sw
+no sh
+exit
+
+
+int se0/1/0
+ip add 10.10.30.1 255.255.255.252
+des Raktar_router fele
+clock rate 4000000
+no sh
+exit
+
+int se0/1/1
+ip add 10.10.30.5 255.255.255.252
+des Iroda_router fele
+no sh
+exit
+
+router ospf 10
+router-id 1.1.1.1
+network 10.10.30.0 0.0.0.3 area 0
+network 10.10.30.4 0.0.0.3 area 0
+network 10.10.100.0 0.0.0.31 area 0
+exit
+
+RG_sw
+
+
+
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname RG_sw
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+
+ip def 10.10.100.1	
+
+int vlan 1
+ip add 10.10.100.2 255.255.255.224
+des RG_sw ip cime
+no sh
+exit
+
+
+
+
+
+
+
+
+
+Iroda_router
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Iroda_router
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+
+
+int g0/0/0
+ip add 10.10.100.33 255.255.255.224
+des Iroda5_sw fele
+no sh
+exit
+
+
+int se0/1/0
+ip add 10.10.30.9 255.255.255.252
+des Recepció/Targyaló_router
+clock rate 4000000
+no sh
+exit
+
+int se0/1/1
+ip add 10.10.30.6 255.255.255.252
+clock rate 4000000
+des RG_router fele
+no sh
+exit
+
+router ospf 10
+router-id 2.2.2.2
+network 10.10.30.8 0.0.0.3 area 0
+network 10.10.30.4 0.0.0.3 area 0
+network 10.10.100.32 0.0.0.31 area 0
+
+
+Iroda5_sw
+
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Iroda5_sw
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+spanning-tree bpduguard default
+spanning-tree portfast bpduguard default
+
+
+ip def 10.10.100.33	
+
+int vlan 1
+ip add 10.10.100.34 255.255.255.224
+des Iroda5_sw
+no sh
+exit
+
+Iroda4_sw
+
+
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Iroda4_sw
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+spanning-tree portfast bpduguard default
+
+
+ip def 10.10.100.33	
+
+int vlan 1
+ip add 10.10.100.35 255.255.255.224
+des Iroda4_sw
+no sh
+exit
+
+Iroda2_SW
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Iroda2_sw
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+spanning-tree portfast bpduguard default
+
+
+ip def 10.10.100.33	
+
+int vlan 1
+ip add 10.10.100.36 255.255.255.224
+des Iroda2_sw
+no sh
+exit
+
+
+Iroda1_sw
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Iroda1_sw
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+spanning-tree portfast bpduguard default
+
+
+ip def 10.10.100.33	
+
+int vlan 1
+ip add 10.10.100.37 255.255.255.224
+des Iroda1_sw
+no sh
+exit
+
+Recepció/Targyaló_router
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Recepció/Targyaló_router
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+
+
+int g0/0/0
+ip add 10.10.100.65 255.255.255.224
+ip helper 10.10.100.3
+des Recepció/Targyaló_sw1 fele
+no sh
+exit
+int g0/0/1
+ip add 10.10.100.97 255.255.255.224
+ip helper 10.10.100.3
+des Recepció/Targyaló_sw2 fele
+no sh
+exit
+
+
+int se0/1/0
+ip add 10.10.30.10 255.255.255.252
+des Iroda_router fele
+no sh
+exit
+
+int se0/1/1
+ip add 10.10.30.13 255.255.255.252
+clock rate 4000000
+des Raktar_router fele
+no sh
+exit
+
+router ospf 10
+router-id 3.3.3.3
+network 10.10.30.8 0.0.0.3 area 0
+network 10.10.30.12 0.0.0.3 area 0
+network 10.10.100.65 0.0.0.31 area 0
+network 10.10.100.96 0.0.0.31 area 0
+
+Recepció/Targyaló_sw1
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Recepció/Targyaló_sw1
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+
+ip def 10.10.100.97	
+
+int vlan 1
+ip add 10.10.100.98 255.255.255.224
+des Recepció/Targyaló_sw1
+no sh
+exit
+
+Recepció/Targyaló_sw2
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Recepció/Targyaló_sw2
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+
+ip def 10.10.100.97	
+
+int vlan 1
+ip add 10.10.100.98 255.255.255.224
+des Recepció/Targyaló_sw2
+no sh
+exit
+
+Raktar_baja
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname Raktar_baja
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
+exit
+
+ip ssh version 2
+
+
+int g0/0/0
+ip add 10.10.100.129 255.255.255.224
+ip helper 10.10.100.3
+des Raktar_sw fele
+no sh
+exit
+
+
+int se0/1/0
+ip add 10.10.30.2 255.255.255.252
+des RG_router fele
+no sh
+exit
+
+int se0/1/1
+ip add 10.10.30.14 255.255.255.252
+des Recepció/Targyaló_router fele
+no sh
+exit
+
+router ospf 10
+router-id 4.4.4.4
+network 10.10.30.0 0.0.0.3 area 0
+network 10.10.30.12 0.0.0.3 area 0
+network 10.10.100.128 0.0.0.31 area 0
