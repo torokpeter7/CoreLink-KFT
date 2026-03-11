@@ -1,5 +1,6 @@
 Alapconfig
 
+szerver_sw2
 en
 clock set 12:00:00 16 Jan 2026
 conf t
@@ -90,17 +91,16 @@ no sh
 exit
 
 int se0/1/0
-ip add 10.10.40.5 255.255.255.252
-des Irodak_routere fele
-clock rate 4000000
+ip add 75.92.210.6 255.255.255.252
+des Internet fele
 no sh
 exit
 
 router eigrp 1
 eigrp router-id 1.1.1.1
 network 10.10.40.0 0.0.0.3
-network 10.10.40.4 0.0.0.3
 network 10.10.1.128 0.0.0.31
+network 75.92.210.4 0.0.0.3 
 pass g0/0/2,se0/1/1
 
 
@@ -212,7 +212,7 @@ exit
 
 int g1/0/3
 swit mode trunk
-swit trunk nat vlan 99
+swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
 
@@ -220,20 +220,20 @@ exit
 
 int g1/0/2
 swit mode trunk
-swit trunk nat vlan 99
+swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
 
 
 int g1/0/7
 swit mode trunk
-swit trunk nat vlan 99
+swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
 
 int g1/0/5
 swit mode trunk
-swit trunk nat vlan 99
+swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
 
@@ -256,7 +256,6 @@ exit
 router eigrp 1
 eigrp router-id 2.2.2.2
 network 10.10.40.0 0.0.0.3
-network 10.10.40.8 0.0.0.3
 network 10.10.1.65 0.0.0.31
 network 10.10.1.32 0.0.0.31
 network 10.10.1.0 0.0.0.31
@@ -315,7 +314,7 @@ exit
 
 int g0/1
 swit mode trunk
-swit trunk nat vlan 99
+swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
 
@@ -387,7 +386,7 @@ exit
 
 int g0/1
 swit mode trunk
-swit trunk nat vlan 99
+swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
 
@@ -456,7 +455,7 @@ exit
 
 int g0/1
 swit mode trunk
-swit trunk nat vlan 99
+swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
 
@@ -528,7 +527,7 @@ exit
 
 int g0/1
 swit mode trunk
-swit trunk nat vlan 99
+swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
 int range f0/1-8
@@ -547,55 +546,4 @@ int range g0/2
 swit mod acc 
 swit acc vlan 40
 
-HQ_router
 
-en
-clock set 12:00:00 16 Jan 2026
-conf t
-hostname HQ_router
-enable secret Class123
-service password-encryption
-banner motd #Idegeneknek belépni tilos!#
-
-line console 0
-password Cisco123
-login
-logging synchronous
-exit
-
-line vty 0 15
-password Cisco123
-login
-exit
-
-
-ip domain-name corelink.hu
-crypto key generate rsa
-1024
-
-user admin secret Cisco1234
-
-line vty 0 15
-login local
-transport input ssh
-exit
-
-ip ssh version 2
-
-int g0/0/0
-ip add 10.10.40.10 255.255.255.252
-des Irodak_routere fele
-no sh
-exit
-
-int se0/1/0
-ip add 10.10.40.5 255.255.255.252
-des Szerver_router fele
-no sh
-exit
-
-router eigrp 1
-eigrp router-id 3.3.3.3
-network 10.10.40.0 0.0.0.3
-network 10.10.40.8 0.0.0.3
-pass g0/0/2
