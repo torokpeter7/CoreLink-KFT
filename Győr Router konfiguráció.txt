@@ -1,0 +1,129 @@
+R1
+en
+clock set 12:00:00 24 Jan 2026
+conf t
+hostname R1
+no ip domain-lookup
+enable secret Cisco123
+service password-encryption
+security passwords min-length 8
+banner motd #Belepes csak engedellyel!#
+
+line console 0
+password Class123
+login
+exit
+
+line vty 0 15
+password Class123
+login local
+transport input ssh
+exit
+
+ip domain-name corelink-kft.hu
+crypto key generate rsa
+1024
+
+user admin priv 15 secret Admin123
+
+ip ssh version 2
+
+interface g0/0/0
+ip add 172.16.1.1 255.255.255.224
+description Szerver Switch fele
+no shutdown
+exit
+
+interface g0/0/2
+ip add 172.16.1.33 255.255.255.224
+description Rendszergazda Switch fele
+no shutdown
+exit
+
+int s0/1/0
+ip add 10.10.10.2 255.255.255.252
+description HQ Kapcsolat fele
+no shutdown
+exit
+
+int s0/1/1
+ip add 10.10.10.5 255.255.255.252
+description R2 fele
+clock rate 4000000
+no shutdown
+exit
+
+router ospf 10
+router-id 7.7.7.7
+network 75.92.210.12 0.0.0.3 area 1
+redistribute ospf 20 subnents
+
+int se0/2/0
+ip add 75.92.210.14 255.255.255.252
+des internet fele
+no sh
+exit
+
+
+router ospf 20
+router-id 7.7.7.7
+network 75.92.210.12 0.0.0.3 area 1
+redistribute ospf 10 subnets
+
+
+R2
+en
+clock set 12:00:00 24 Jan 2026
+conf t
+hostname R2
+no ip domain-lookup
+enable secret Cisco123
+service password-encryption
+security passwords min-length 8
+banner motd #Belepes csak engedellyel!#
+
+line console 0
+password Class123
+login
+exit
+
+line vty 0 15
+password Class123
+login local
+transport input ssh
+exit
+
+ip domain-name corelink-kft.hu
+crypto key generate rsa
+1024
+
+user admin priv 15 secret Admin123
+
+ip ssh version 2
+
+interface g0/0/0
+ip add 172.16.1.97 255.255.255.224
+description Raktart Switch fele
+no shutdown
+exit
+
+interface g0/0/1
+ip add 172.16.1.65 255.255.255.224
+description Iroda Switch fele
+no shutdown
+exit
+
+int s0/1/0
+ip add 10.10.10.10 255.255.255.252
+description HQ Kapcsolat fele
+no shutdown
+exit
+
+int s0/1/1
+ip add 10.10.10.6 255.255.255.252
+description R1 fele
+no shutdown
+exit
+
+
+

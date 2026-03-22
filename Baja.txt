@@ -47,11 +47,26 @@ des Központi router
 no sh
 exit
 
+int se0/1/0
+ip add 75.92.210.10 255.255.255.252
+des internet fele
+no sh
+exit
+
+
 router ospf 10
 router-id 1.1.1.1
 network 10.10.30.4 0.0.0.3 area 0
 network 10.10.100.0 0.0.0.31 area 0
+redistribute ospf 20 subnets
+pass g0/0/2
 exit
+
+router ospf 20
+router-id 6.6.6.6
+network 75.92.210.8 0.0.0.3 area 1
+redistribute ospf 10 subnets
+pass g0/0/2
 
 RG_sw
 
@@ -97,140 +112,6 @@ ip add 10.10.100.2 255.255.255.224
 des RG_sw ip cime
 no sh
 exit
-
-
-Központi router
-
-
-en
-clock set 12:00:00 28 Jan 2026
-conf t
-hostname Kozponti_router
-enable secret Class123
-service password-encryption
-banner motd #Idegeneknek belépni tilos!#
-
-line console 0
-password Cisco123
-login
-logging synchronous
-exit
-
-line vty 0 15
-password Cisco123
-login
-exit
-
-
-ip domain-name corelink.hu
-crypto key generate rsa
-1024
-
-user admin secret Cisco1234
-
-line vty 0 15
-login local
-transport input ssh
-exit
-
-ip ssh version 2
-
-
-int g0/0/1
-ip add 10.10.100.33 255.255.255.224
-des Iroda5_sw fele
-no sh
-exit
-
-
-
-
-int se0/1/0
-ip add 10.10.30.9 255.255.255.252
-des Recepció/Targyaló_router
-clock rate 4000000
-no sh
-exit
-
-int se0/1/1
-ip add 10.10.30.6 255.255.255.252
-clock rate 4000000
-des RG_router fele
-no sh
-exit
-
-router ospf 10
-router-id 2.2.2.2
-network 10.10.30.8 0.0.0.3 area 0
-network 10.10.30.4 0.0.0.3 area 0
-network 10.10.100.32 0.0.0.31 area 0
-
-
-
-
-
-Iroda_router
-en
-clock set 12:00:00 28 Jan 2026
-conf t
-hostname Iroda_router
-enable secret Class123
-service password-encryption
-banner motd #Idegeneknek belépni tilos!#
-
-line console 0
-password Cisco123
-login
-logging synchronous
-exit
-
-line vty 0 15
-password Cisco123
-login
-exit
-
-
-ip domain-name corelink.hu
-crypto key generate rsa
-1024
-
-user admin secret Cisco1234
-
-line vty 0 15
-login local
-transport input ssh
-exit
-
-ip ssh version 2
-
-
-int g0/0/0
-ip add 10.10.100.33 255.255.255.224
-des Iroda5_sw fele
-no sh
-exit
-
-
-int se0/1/0
-ip add 10.10.30.9 255.255.255.252
-des Recepció/Targyaló_router
-clock rate 4000000
-no sh
-exit
-
-int se0/1/1
-ip add 10.10.30.6 255.255.255.252
-clock rate 4000000
-des RG_router fele
-no sh
-exit
-
-router ospf 10
-router-id 2.2.2.2
-network 10.10.30.8 0.0.0.3 area 0
-network 10.10.30.4 0.0.0.3 area 0
-network 10.10.100.32 0.0.0.31 area 0
-
 
 Iroda5_sw
 
@@ -413,61 +294,7 @@ des Iroda1_sw
 no sh
 exit
 
-Recepció/Targyaló_router
-en
-clock set 12:00:00 28 Jan 2026
-conf t
-hostname Recepció/Targyaló_router
-enable secret Class123
-service password-encryption
-banner motd #Idegeneknek belépni tilos!#
-
-line console 0
-password Cisco123
-login
-logging synchronous
-exit
-
-line vty 0 15
-password Cisco123
-login
-exit
-
-
-ip domain-name corelink.hu
-crypto key generate rsa
-1024
-
-user admin secret Cisco1234
-
-line vty 0 15
-login local
-transport input ssh
-exit
-
-ip ssh version 2
-
-
-int g0/0/0
-ip add 10.10.100.65 255.255.255.224
-ip helper 10.10.100.3
-des Recepció/Targyaló_sw1 fele
-no sh
-exit
-int g0/0/1
-ip add 10.10.100.97 255.255.255.224
-ip helper 10.10.100.3
-des Recepció/Targyaló_sw2 fele
-no sh
-exit
-
-
-int se0/1/0
-ip add 10.10.30.10 255.255.255.252
-des Iroda_router fele
-no sh
-exit
-
+Kozponti_router
 
 
 en
@@ -551,22 +378,6 @@ network 10.10.100.65 0.0.0.31 area 0
 network 10.10.100.96 0.0.0.31 area 0
 network 10.10.100.128 0.0.0.31 area 0
 
-
-
-
-int se0/1/1
-ip add 10.10.30.13 255.255.255.252
-clock rate 4000000
-des Raktar_router fele
-no sh
-exit
-
-router ospf 10
-router-id 3.3.3.3
-network 10.10.30.8 0.0.0.3 area 0
-network 10.10.30.12 0.0.0.3 area 0
-network 10.10.100.65 0.0.0.31 area 0
-network 10.10.100.96 0.0.0.31 area 0
 
 Recepció/Targyaló_sw1
 en
@@ -652,11 +463,14 @@ des Recepció/Targyaló_sw2
 no sh
 exit
 
-Raktar_baja
+
+
+
+Baja_irodak_routere
 en
 clock set 12:00:00 28 Jan 2026
 conf t
-hostname Raktar_baja
+hostname Baja_irodak_routere
 enable secret Class123
 service password-encryption
 banner motd #Idegeneknek belépni tilos!#
@@ -688,27 +502,30 @@ ip ssh version 2
 
 
 int g0/0/0
-ip add 10.10.100.129 255.255.255.224
-ip helper 10.10.100.3
-des Raktar_sw fele
+ip add 10.10.100.161 255.255.255.224
+des Iroda4_sw
 no sh
 exit
-
-
 int se0/1/0
-ip add 10.10.30.2 255.255.255.252
-des RG_router fele
+ip add 75.92.210.2 255.255.255.252
+des Internet fele
 no sh
 exit
 
-int se0/1/1
-ip add 10.10.30.14 255.255.255.252
-des Recepció/Targyaló_router fele
-no sh
-exit
+
 
 router ospf 10
-router-id 4.4.4.4
-network 10.10.30.0 0.0.0.3 area 0
-network 10.10.30.12 0.0.0.3 area 0
-network 10.10.100.128 0.0.0.31 area 0
+router-id 3.3.3.3
+network 10.10.100.160 0.0.0.31 area 0
+redistribute ospf 20 subnets
+pass g0/0/1
+pass g0/0/2
+exit
+
+router ospf 20
+router-id 5.5.5.5
+network 75.92.210.0 0.0.0.3 area 1
+redistribute ospf 10 subnets
+pass g0/0/1
+pass g0/0/2
+exit
