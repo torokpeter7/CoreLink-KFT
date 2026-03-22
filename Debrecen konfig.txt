@@ -223,7 +223,7 @@ Sw_Targyalo
 en
 clock set 12:00:00 22 Mar 2026
 conf t
-hostname Debrecen_Kozpont_Sw
+hostname Debrecen_Targyalo_Sw
 no ip domain-lookup
 enable secret Class123
 service password-encryption
@@ -332,20 +332,23 @@ address prefix 2001:db8:acad:a::/64
 dns-server 2001:4860:4860::8888
 domain-name corelink-kft.hu
 
-int vlan 20
-ipv6 add 2001:db8:acad:a::1/64
-ip add 172.16.100.33 255.255.255.224
-ipv6 add fe80::1 link
-ipv6 dhcp server raktar
-ipv6 nd man-co
-
 
 ipv6 dhcp pool iroda
 address prefix 2001:db8:acad:b::/64
 dns-server 2001:4860:4860::8888
 domain-name corelink-kft.hu
 
-int vlan 10
+ipv6 dhcp pool targyalo
+address prefix 2001:db8:acad:d::/64
+dns-server 2001:4860:4860::8888
+domain-name corelink-kft.hu
+
+ipv6 dhcp pool rg
+address prefix 2001:db8:acad:c::/64
+dns-server 2001:4860:4860::8888
+domain-name corelink-kft.hu
+
+int g0/0/0.10
 ipv6 add 2001:db8:acad:b::1/64
 ip add 172.16.100.65 255.255.255.224
 ipv6 add fe80::1 link
@@ -354,3 +357,24 @@ ipv6 nd other-co
 exit
 
 
+int g0/0/0.20
+ipv6 add 2001:db8:acad:a::1/64
+ip add 172.16.100.33 255.255.255.224
+ipv6 add fe80::1 link
+ipv6 dhcp server raktar
+ipv6 nd managed-co
+
+int g0/0/0.30
+ipv6 add 2001:db8:acad:c::1/64
+ip add 172.16.100.97 255.255.255.224
+ipv6 add fe80::1 link
+ipv6 dhcp server rg
+ipv6 nd managed-co
+
+
+int g0/0/1
+ipv6 add 2001:db8:acad:d::1/64
+ip add 172.16.100.129 255.255.255.224
+ipv6 add fe80::1 link
+ipv6 dhcp server targyalo
+ipv6 nd other-co
