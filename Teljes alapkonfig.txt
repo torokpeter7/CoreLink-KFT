@@ -96,12 +96,27 @@ des Internet fele
 no sh
 exit
 
+ip nat inside source static 10.10.1.131 209.165.16.2
+int g0/0/1
+ip nat inside
+int se0/1/0
+ip nat outside
+
+
 router eigrp 1
 eigrp router-id 1.1.1.1
 network 10.10.40.0 0.0.0.3
 network 10.10.1.128 0.0.0.31
 network 75.92.210.4 0.0.0.3 
-pass g0/0/2,se0/1/1
+redistribute ospf 20 metric 10000 100 255 1 1500
+pass g0/0/2
+se0/1/1
+
+router ospf 20
+router-id 4.4.4.4
+netw 75.92.210.4 0.0.0.3 area 1
+redistribute eigrp 10 subnets
+pass g0/0/2
 
 
 
@@ -189,25 +204,25 @@ ip dhcp excluded-address 10.10.1.97 10.10.1.101
 ip dhcp pool vlan10
  network 10.10.1.0 255.255.255.224
  default-router 10.10.1.1
- dns-server 10.10.1.131
+ dns-server 8.8.8.10
 exit
 
 ip dhcp pool vlan20
  network 10.10.1.32 255.255.255.224
  default-router 10.10.1.33
- dns-server 10.10.1.131
+ dns-server 8.8.8.10
 exit
 
 ip dhcp pool vlan30
  network 10.10.1.64 255.255.255.224
  default-router 10.10.1.65
- dns-server 10.10.1.131
+ dns-server 8.8.8.101
 exit
 
 ip dhcp pool vlan40
  network 10.10.1.96 255.255.255.224
  default-router 10.10.1.97
- dns-server 10.10.1.131
+ dns-server 8.8.8.10
 exit
 
 int g1/0/3
@@ -260,7 +275,9 @@ network 10.10.1.65 0.0.0.31
 network 10.10.1.32 0.0.0.31
 network 10.10.1.0 0.0.0.31
 network 10.10.1.96 0.0.0.31
-pass g1/0/6,g1/0/8-24,g1/1/1-4
+pass g1/0/6
+pass g1/0/8-24
+pass g1/1/1-4
 
 
 
@@ -542,8 +559,9 @@ int range f0/18-24
 swit mod acc
 swit acc vlan 40
 exit
-int range g0/2
-swit mod acc 
-swit acc vlan 40
+int range f0/2
+swit mod acc
+switchport voice vlan 40
+
 
 
