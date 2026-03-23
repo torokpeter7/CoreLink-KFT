@@ -259,11 +259,6 @@ vlan 100
 name NAT
 vlan 999
 name blackhole
-int r g0/1
-sw mode trunk
-sw nonego
-sw trunk all vlan 10,20,30,100,999
-
 
 
 R_Debrecen
