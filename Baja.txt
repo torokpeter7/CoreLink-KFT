@@ -1,8 +1,7 @@
 RG_router
 
 
-en
-clock set 12:00:00 28 Jan 2026
+enable
 conf t
 hostname RG_router
 enable secret Class123
@@ -10,63 +9,95 @@ service password-encryption
 banner motd #Idegeneknek belépni tilos!#
 
 line console 0
-password Cisco123
-login
-logging synchronous
-exit
+ password Cisco123
+ login
+ logging synchronous
+ exit
 
 line vty 0 15
-password Cisco123
-login
-exit
-
+ password Cisco123
+ login
+ exit
 
 ip domain-name corelink.hu
-crypto key generate rsa
-1024
-
-user admin secret Cisco1234
+crypto key generate rsa modulus 1024
+username admin secret Cisco1234
 
 line vty 0 15
-login local
-transport input ssh
-exit
+ login local
+ transport input ssh
+ exit
 
 ip ssh version 2
 
+interface g0/0/0
+ ip address 10.10.100.1 255.255.255.224
+ description RG_sw
+ no shutdown
+ exit
 
-int g0/0/0
-ip add 10.10.100.1 255.255.255.252
-des RG_sw
-no sh
-exit
+interface g0/0/1.10
+ encapsulation dot1Q 10
+ ip address 10.10.100.34 255.255.255.224
+ description kozponti_sw fele
+ ip helper-address 10.10.100.3
+ standby 10 ip 10.10.100.33
+ standby 10 priority 110
+ standby 10 preempt
+ no shutdown
+ exit
 
-int g0/0/1
-ip add 10.10.30.5 255.255.255.252
-des Központi router
-no sh
-exit
+interface g0/0/1.20
+ encapsulation dot1Q 20
+ ip address 10.10.100.66 255.255.255.224
+ description Recepcio_Targyalo_sw1 fele
+ ip helper-address 10.10.100.3
+ standby 20 ip 10.10.100.65
+ standby 20 priority 110
+ standby 20 preempt
+ no shutdown
+ exit
 
-int se0/1/0
-ip add 75.92.210.10 255.255.255.252
-des internet fele
-no sh
-exit
+interface g0/0/1.30
+ encapsulation dot1Q 30
+ ip address 10.10.100.98 255.255.255.224
+ description Recepcio_Targyalo_sw2 fele
+ ip helper-address 10.10.100.3
+ standby 30 ip 10.10.100.97
+ standby 30 priority 110
+ standby 30 preempt
+ no shutdown
+ exit
 
+interface g0/0/1.40
+ encapsulation dot1Q 40
+ ip address 10.10.100.130 255.255.255.224
+ description Raktar_sw fele
+ ip helper-address 10.10.100.3
+ standby 40 ip 10.10.100.129
+ standby 40 priority 110
+ standby 40 preempt
+ no shutdown
+ exit
+
+interface s0/1/0
+ ip address 75.92.210.10 255.255.255.252
+ description internet fele
+ no shutdown
+ exit
 
 router ospf 10
-router-id 1.1.1.1
-network 10.10.30.4 0.0.0.3 area 0
-network 10.10.100.0 0.0.0.31 area 0
-redistribute ospf 20 subnets
-pass g0/0/2
-exit
+ router-id 6.6.6.6
+ network 75.92.210.8 0.0.0.3 area 1
+ network 10.10.100.0 0.0.0.31 area 1
+ network 10.10.100.32 0.0.0.31 area 1
+ network 10.10.100.64 0.0.0.31 area 1
+ network 10.10.100.96 0.0.0.31 area 1
+ network 10.10.100.128 0.0.0.31 area 1
+ passive-interface g0/0/0
+ passive-interface g0/0/1
+exit 
 
-router ospf 20
-router-id 6.6.6.6
-network 75.92.210.8 0.0.0.3 area 1
-redistribute ospf 10 subnets
-pass g0/0/2
 
 RG_sw
 
@@ -154,10 +185,36 @@ spanning-tree portfast bpduguard default
 ip def 10.10.100.33	
 
 int vlan 1
-ip add 10.10.100.34 255.255.255.224
+ip add 10.10.100.39 255.255.255.224
 des Iroda5_sw
 no sh
 exit
+
+
+vtp domain Baja.hu
+vtp pass Class123
+vtp mode client
+
+int f0/4
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int f0/5
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int range f0/2
+swit mod acc
+swit acc vlan 10
+int range f0/1
+swit mod acc
+swit acc vlan 10
+
+
 
 Iroda4_sw
 
@@ -200,10 +257,35 @@ spanning-tree portfast bpduguard default
 ip def 10.10.100.33	
 
 int vlan 1
-ip add 10.10.100.35 255.255.255.224
+ip add 10.10.100.38 255.255.255.224
 des Iroda4_sw
 no sh
 exit
+
+
+
+vtp domain Baja.hu
+vtp pass Class123
+vtp mode client
+
+int f0/4
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int f0/7
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int range f0/2
+swit mod acc
+swit acc vlan 10
+int range f0/1
+swit mod acc
+swit acc vlan 10
 
 Iroda2_SW
 en
@@ -248,6 +330,35 @@ ip add 10.10.100.36 255.255.255.224
 des Iroda2_sw
 no sh
 exit
+
+vtp domain Baja.hu
+vtp pass Class123
+vtp mode client
+
+int g0/1
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int f0/4
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int f0/5
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int range f0/2
+swit mod acc
+swit acc vlan 10
+int range f0/1
+swit mod acc
+swit acc vlan 10
 
 
 Iroda1_sw
@@ -294,13 +405,35 @@ des Iroda1_sw
 no sh
 exit
 
-Kozponti_router
+vtp domain Baja.hu
+vtp pass Class123
+vtp mode client
+
+int f0/3
+swit mode trunk 
+swit acc
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int f0/7
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int range f0/2
+swit mod acc
+swit acc vlan 10
+int range f0/1
+swit mod acc
+swit acc vlan 10
 
 
+Raktar_sw
 en
 clock set 12:00:00 28 Jan 2026
 conf t
-hostname Kozponti_router
+hostname Raktar_sw
 enable secret Class123
 service password-encryption
 banner motd #Idegeneknek belépni tilos!#
@@ -331,54 +464,114 @@ exit
 ip ssh version 2
 
 
-int g1/0/1
-no sw
-ip add 10.10.100.33 255.255.255.224
-des Iroda5_sw fele
-ip helper 10.10.100.3
+ip def 10.10.100.129	
+
+int vlan 1
+ip add 10.10.100.132 255.255.255.224
+des Iroda2_sw
 no sh
 exit
 
-int g1/0/2
-no sw
-ip add 10.10.100.65 255.255.255.224
-ip helper 10.10.100.3
-des Recepció/Targyaló_sw1 fele
-no sh
+vtp domain Baja.hu
+vtp pass Class123
+vtp mode client
+
+int f0/3
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int range f0/2
+swit mod acc
+swit acc vlan 40
+int range f0/1
+swit mod acc
+swit acc vlan 40
+
+
+Kozponti_sw
+
+
+en
+clock set 12:00:00 28 Jan 2026
+conf t
+hostname kozponti_sw
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
 exit
 
-int g1/0/3
-no sw
-ip add 10.10.100.97 255.255.255.224
-ip helper 10.10.100.3
-des Recepció/Targyaló_sw2 fele
-no sh
+line vty 0 15
+password Cisco123
+login
 exit
 
-int g1/0/5
-no sw
-ip add 10.10.30.6 255.255.255.252
-des RG_router fele
-no sh
+
+ip domain-name corelink.hu
+crypto key generate rsa
+1024
+
+user admin secret Cisco1234
+
+line vty 0 15
+login local
+transport input ssh
 exit
 
-int g1/0/4
-no sw
-ip add 10.10.100.129 255.255.255.224
-ip helper 10.10.100.3
-des Raktar_sw fele
-no sh
-exit
+ip ssh version 2
 
-router ospf 10
-router-id 2.2.2.2
-network 10.10.30.4 0.0.0.3 area 0
-network 10.10.100.32 0.0.0.31 area 0
-network 10.10.100.65 0.0.0.31 area 0
-network 10.10.100.96 0.0.0.31 area 0
-network 10.10.100.128 0.0.0.31 area 0
+vlan 10
+name Iroda
+vlan 20
+name Wifi
+vlan 30 
+name Recepcio/Targyalo
+vlan 40
+name Raktar
+vlan 99
+name native
 
+vtp domain Baja.hu
+vtp pass Class123
 
+int f0/3
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+int g0/1
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+int g0/2
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+int f0/4
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+int f0/1
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+int f0/2
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+	
 Recepció/Targyaló_sw1
 en
 clock set 12:00:00 28 Jan 2026
@@ -416,10 +609,25 @@ ip ssh version 2
 ip def 10.10.100.97	
 
 int vlan 1
-ip add 10.10.100.98 255.255.255.224
+ip add 10.10.100.100 255.255.255.224
 des Recepció/Targyaló_sw1
 no sh
 exit
+
+vtp domain Baja.hu
+vtp pass Class123
+vtp mode client
+
+int f0/2
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int range f0/5
+swit mod acc
+swit acc vlan 30
+
 
 Recepció/Targyaló_sw2
 en
@@ -458,17 +666,37 @@ ip ssh version 2
 ip def 10.10.100.97	
 
 int vlan 1
-ip add 10.10.100.98 255.255.255.224
+ip add 10.10.100.100 255.255.255.224
 des Recepció/Targyaló_sw2
 no sh
 exit
 
+vtp domain Baja.hu
+vtp pass Class123
+vtp mode client
 
+int f0/4
+swit mode trunk 
+swit noneg
+swit trunk nat vlan 99
+swit trunk all vlan 10,20,30,40,99
+
+int range f0/1
+swit mod acc
+swit acc vlan 20
+int range f0/2
+swit mod acc
+swit acc vlan 20
+int range f0/3
+swit mod acc
+swit acc vlan 20
+int range g0/1
+swit mod acc
+swit acc vlan 20
 
 
 Baja_irodak_routere
-en
-clock set 12:00:00 28 Jan 2026
+enable
 conf t
 hostname Baja_irodak_routere
 enable secret Class123
@@ -476,56 +704,84 @@ service password-encryption
 banner motd #Idegeneknek belépni tilos!#
 
 line console 0
-password Cisco123
-login
-logging synchronous
-exit
+ password Cisco123
+ login
+ logging synchronous
+ exit
 
 line vty 0 15
-password Cisco123
-login
-exit
-
+ password Cisco123
+ login
+ exit
 
 ip domain-name corelink.hu
-crypto key generate rsa
-1024
-
-user admin secret Cisco1234
+crypto key generate rsa modulus 1024
+username admin secret Cisco1234
 
 line vty 0 15
-login local
-transport input ssh
-exit
+ login local
+ transport input ssh
+ exit
 
 ip ssh version 2
 
-
-int g0/0/0
-ip add 10.10.100.161 255.255.255.224
-des Iroda4_sw
-no sh
-exit
-int se0/1/0
-ip add 75.92.210.2 255.255.255.252
-des Internet fele
-no sh
-exit
-
-
-
+interface g0/0/0
+ ip address 10.10.100.2 255.255.255.224
+ description RG_sw
+ no shutdown
+ exit
+interface g0/0/1.10
+ encapsulation dot1Q 10
+ ip address 10.10.100.35 255.255.255.224
+ description kozponti_sw fele
+ ip helper-address 10.10.100.3
+ standby 10 ip 10.10.100.33
+ standby 10 priority 100
+ standby 10 preempt
+ no shutdown
+ exit
+interface g0/0/1.20
+ encapsulation dot1Q 20
+ ip address 10.10.100.67 255.255.255.224
+ description Recepcio_Targyalo_sw1 fele
+ ip helper-address 10.10.100.3
+ standby 20 ip 10.10.100.65
+ standby 20 priority 100
+ standby 20 preempt
+ no shutdown
+ exit
+interface g0/0/1.30
+ encapsulation dot1Q 30
+ ip address 10.10.100.99 255.255.255.224
+ description Recepcio_Targyalo_sw2 fele
+ ip helper-address 10.10.100.3
+ standby 30 ip 10.10.100.97
+ standby 30 priority 100
+ standby 30 preempt
+ no shutdown
+ exit
+interface g0/0/1.40
+ encapsulation dot1Q 40
+ ip address 10.10.100.131 255.255.255.224
+ description Raktar_sw fele
+ ip helper-address 10.10.100.3
+ standby 40 ip 10.10.100.129
+ standby 40 priority 100
+ standby 40 preempt
+ no shutdown
+ exit
+interface s0/1/0
+ ip address 75.92.210.2 255.255.255.252
+ description internet/backbone fele
+ no shutdown
+ exit
 router ospf 10
-router-id 3.3.3.3
-network 10.10.100.160 0.0.0.31 area 0
-redistribute ospf 20 subnets
-pass g0/0/1
-pass g0/0/2
-exit
+ router-id 5.5.5.5
+ network 10.10.100.0 0.0.0.31 area 1
+ network 10.10.100.32 0.0.0.31 area 1
+ network 10.10.100.64 0.0.0.31 area 1
+ network 10.10.100.96 0.0.0.31 area 1
+ network 10.10.100.128 0.0.0.31 area 1
+ network 75.92.210.0 0.0.0.3 area 1
+ passive-interface g0/0/0
 
-router ospf 20
-router-id 5.5.5.5
-network 75.92.210.0 0.0.0.3 area 1
-redistribute ospf 10 subnets
-pass g0/0/1
-pass g0/0/2
-exit

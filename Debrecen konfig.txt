@@ -373,3 +373,14 @@ ip add 172.16.100.129 255.255.255.224
 ipv6 add fe80::1 link
 ipv6 dhcp server targyalo
 ipv6 nd other-co
+
+router ospf 10
+router-id 8.8.8.8
+passive-interface GigabitEthernet0/0/0
+passive-interface GigabitEthernet0/0/1
+network 172.16.100.64 0.0.0.31 area 1
+network 172.16.100.32 0.0.0.31 area 1
+network 172.16.100.96 0.0.0.31 area 1
+network 172.16.100.128 0.0.0.31 area 1
+network 75.92.210.16 0.0.0.3 area 1
+
