@@ -151,12 +151,26 @@ ip dhcp pool vlan40
  dns-server 8.8.8.10
 exit
 
+int g1/0/1
+no sw
+ip add 10.10.1.162 255.255.255.252
+no sh
+desc Budapest_ASA fele
+exit
+
+int g1/0/6
+no sw
+ip add 10.10.1.129 255.255.255.224
+no sh
+desc RG_Szerver fele
+exit
+
+
 int g1/0/3
 swit mode trunk
 swit trunk nat vlan 40
 swit trunk all vlan 10,20,30,40,99
 exit
-
 
 
 int g1/0/2
@@ -186,14 +200,11 @@ des Internet fele
 no sh
 exit
 
-ip nat inside source static 10.10.1.131 209.165.16.2
-
-
 ip routing
 
 router ospf 10
 router-id 4.4.4.4
-netw 75.92.210.4 0.0.0.3 area 1
+network 10.10.1.160 0.0.0.31 area 1
 network 10.10.1.128 0.0.0.31 area 1
 network 10.10.1.96 0.0.0.31 area 1
 network 10.10.1.0 0.0.0.31 area 1
@@ -204,6 +215,9 @@ pass g1/0/5
 pass g1/0/6
 pass g1/0/2
 pass g1/0/3
+
+
+
 
 
 
@@ -490,5 +504,40 @@ int range f0/2
 swit mod acc
 switchport voice vlan 40
 
+
+ASA tűzfal
+ena
+conf t
+ena pass class123
+host Budapest_ASA
+
+int g1/2
+nameif OUTSIDE
+sec 0
+ip add 75.92.210.6 255.255.255.252
+des Internet fele
+no sh
+exit
+
+int g1/1
+nameif INSIDE
+sec 100
+ip add 10.10.1.161 255.255.255.252
+des Irodak Routere fele
+no sh
+exit
+
+router ospf 10
+router-id 9.9.9.9
+netw 75.92.210.4 255.255.255.252 area 1
+network 10.10.1.160 255.255.255.224 area 1
+
+object network Belso_Szerver
+host 10.10.1.131
+nat (INSIDE,OUTSIDE) static 209.165.16.1
+exit
+
+access-list Ping extended permit icmp any any
+access-group Ping in int OUTSIDE
 
 
