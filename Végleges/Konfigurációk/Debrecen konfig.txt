@@ -1,0 +1,386 @@
+Sw_Raktar
+en
+clock set 12:00:00 26 Jan 2026
+conf t
+hostname Debrecen_Raktar_Switch
+no ip domain-lookup
+enable secret Class123
+service password-encryption
+banner motd #Belepes csak engedellyel!#
+
+line console 0
+password Cisco123
+login
+exit
+
+line vty 0 15
+password Cisco123
+login local
+transport input ssh
+exit
+
+ip domain-name corelink-kft.hu
+crypto key generate rsa
+1024
+
+user admin priv 15 secret Admin123
+
+ip ssh version 2
+
+vlan 10
+name iroda
+vlan 20
+name raktar
+vlan 30
+name rg
+vlan 100
+name NAT
+vlan 999
+name blackhole
+
+int r g0/1
+sw mode trunk
+sw nonego
+sw trunk all vlan 10,20,30,100,999
+
+int r f0/3-24, g0/2
+sw mode access
+sw access vlan 999
+sh
+
+int r f0/1-2
+sw mode access
+sw access vlan 20
+
+
+
+
+Sw_Iroda
+en
+clock set 12:00:00 26 Jan 2026
+conf t
+hostname Debrecen_Iroda_Switch
+no ip domain-lookup
+enable secret Class123
+service password-encryption
+banner motd #Belepes csak engedellyel!#
+
+line console 0
+password Cisco123
+login
+exit
+
+line vty 0 15
+password Cisco123
+login local
+transport input ssh
+exit
+
+ip domain-name corelink-kft.hu
+crypto key generate rsa
+1024
+
+user admin priv 15 secret Admin123
+
+ip ssh version 2
+
+vlan 10
+name iroda
+vlan 20
+name raktar
+vlan 30
+name rg
+vlan 100
+name NAT
+vlan 999
+name blackhole
+
+int r g0/1
+sw mode trunk
+sw nonego
+sw trunk all vlan 10,20,30,100,999
+
+int r f0/6-24, g0/2
+sw mode access
+sw access vlan 999
+sh
+
+int r f0/1-5
+sw mode access
+sw access vlan 30
+
+
+
+Sw_RG
+en
+clock set 12:00:00 26 Jan 2026
+conf t
+hostname Debrecen_RG_Switch
+no ip domain-lookup
+enable secret Class123
+service password-encryption
+banner motd #Belepes csak engedellyel!#
+
+line console 0
+password Cisco123
+login
+exit
+
+line vty 0 15
+password Cisco123
+login local
+transport input ssh
+exit
+
+ip domain-name corelink-kft.hu
+crypto key generate rsa
+1024
+
+user admin priv 15 secret Admin123
+
+ip ssh version 2
+
+vlan 10
+name iroda
+vlan 20
+name raktar
+vlan 30
+name rg
+vlan 100
+name NAT
+vlan 999
+name blackhole
+
+int r g0/1
+sw mode trunk
+sw nonego
+sw trunk all vlan 10,20,30,100,999
+
+int r f0/4-24
+sw mode access
+sw access vlan 999
+sh
+
+int r f0/1-3, g0/2
+sw mode access
+sw access vlan 30
+
+
+
+Kozpont_Sw
+en
+clock set 12:00:00 22 Mar 2026
+conf t
+hostname Debrecen_Kozpont_Sw
+no ip domain-lookup
+enable secret Class123
+service password-encryption
+banner motd #Belepes csak engedellyel!#
+
+line console 0
+password Cisco123
+login
+exit
+
+line vty 0 15
+password Cisco123
+login local
+transport input ssh
+exit
+
+ip domain-name corelink-kft.hu
+crypto key generate rsa
+1024
+
+user admin priv 15 secret Admin123
+
+ip ssh version 2
+ipv6 uni
+
+vlan 10
+name iroda
+vlan 20
+name raktar
+vlan 30
+name rg
+vlan 100
+name NAT
+vlan 999
+name blackhole
+
+int r g0/1, f0/3-5
+sw mode trunk
+sw nonego
+sw trunk all vlan 10,20,30,100,999
+
+int r f0/1-2, f0/6-24
+sw mode access
+sw access vlan 999
+sh
+
+Sw_Targyalo
+
+en
+clock set 12:00:00 22 Mar 2026
+conf t
+hostname Debrecen_Targyalo_Sw
+no ip domain-lookup
+enable secret Class123
+service password-encryption
+banner motd #Belepes csak engedellyel!#
+
+line console 0
+password Cisco123
+login
+exit
+
+line vty 0 15
+password Cisco123
+login local
+transport input ssh
+exit
+
+ip domain-name corelink-kft.hu
+crypto key generate rsa
+1024
+
+user admin priv 15 secret Admin123
+
+ip ssh version 2
+ipv6 uni
+
+vlan 10
+name iroda
+vlan 20
+name raktar
+vlan 30
+name rg
+vlan 100
+name NAT
+vlan 999
+name blackhole
+
+
+R_Debrecen
+en
+clock set 12:00:00 26 Jan 2026
+conf t
+hostname Debrecen_R
+no ip domain-lookup
+enable secret Cisco123
+service password-encryption
+banner motd #Belepes csak engedellyel!#
+
+line console 0
+password Class123
+login
+exit
+
+line vty 0 15
+password Class123
+login local
+transport input ssh
+exit
+
+ip domain-name corelink-kft.hu
+crypto key generate rsa
+1024
+
+user admin priv 15 secret Admin123
+
+ip ssh version 2
+
+int g0/0/1
+ipv6 add 2001:db8:acad:d::1/64
+ipv6 add fe80::1 link
+desc Targyalo fele
+no sh
+
+
+
+int g0/0/0.10
+enc dot 10
+ip add 172.16.100.65 255.255.255.224
+no sh
+
+int g0/0/0.20
+enc dot 20
+ip add 172.16.100.33 255.255.255.224
+no sh
+
+
+int g0/0/0.30
+enc dot 30
+ip add 172.16.100.97 255.255.255.224
+no sh
+
+int g0/0/0.100
+enc dot 100
+ip add 172.16.100.225 255.255.255.224
+no sh
+
+
+
+
+ipv6 dhcp pool raktar
+address prefix 2001:db8:acad:a::/64
+dns-server 2001:4860:4860::8888
+domain-name corelink-kft.hu
+
+
+ipv6 dhcp pool iroda
+address prefix 2001:db8:acad:b::/64
+dns-server 2001:4860:4860::8888
+domain-name corelink-kft.hu
+
+ipv6 dhcp pool targyalo
+address prefix 2001:db8:acad:d::/64
+dns-server 2001:4860:4860::8888
+domain-name corelink-kft.hu
+
+ipv6 dhcp pool rg
+address prefix 2001:db8:acad:c::/64
+dns-server 2001:4860:4860::8888
+domain-name corelink-kft.hu
+
+int g0/0/0.10
+ipv6 add 2001:db8:acad:b::1/64
+ip add 172.16.100.65 255.255.255.224
+ipv6 add fe80::1 link
+ipv6 dhcp server iroda
+ipv6 nd other-co
+exit
+
+
+int g0/0/0.20
+ipv6 add 2001:db8:acad:a::1/64
+ip add 172.16.100.33 255.255.255.224
+ipv6 add fe80::1 link
+ipv6 dhcp server raktar
+ipv6 nd managed-co
+
+int g0/0/0.30
+ipv6 add 2001:db8:acad:c::1/64
+ip add 172.16.100.97 255.255.255.224
+ipv6 add fe80::1 link
+ipv6 dhcp server rg
+ipv6 nd managed-co
+
+
+int g0/0/1
+ipv6 add 2001:db8:acad:d::1/64
+ip add 172.16.100.129 255.255.255.224
+ipv6 add fe80::1 link
+ipv6 dhcp server targyalo
+ipv6 nd other-co
+
+router ospf 10
+router-id 8.8.8.8
+passive-interface GigabitEthernet0/0/0
+passive-interface GigabitEthernet0/0/1
+network 172.16.100.64 0.0.0.31 area 1
+network 172.16.100.32 0.0.0.31 area 1
+network 172.16.100.96 0.0.0.31 area 1
+network 172.16.100.128 0.0.0.31 area 1
+network 75.92.210.16 0.0.0.3 area 1
+
