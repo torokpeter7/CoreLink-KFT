@@ -1,0 +1,146 @@
+ISP_A
+
+en
+clock set 12:00:00 16 Jan 2026
+conf t
+hostname ISP_A
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+interface g0/0/2
+ description Szerver_Router fele
+ ip address 75.92.210.5 255.255.255.252
+ clock rate 4000000
+
+interface Serial0/1/1
+ description ISP_B fele
+ ip address 75.92.210.21 255.255.255.252
+ clock rate 4000000
+
+interface Serial0/2/0
+ description Gyr_Router fele
+ ip address 75.92.210.13 255.255.255.252
+ clock rate 4000000
+
+router ospf 10
+ router-id 1.1.1.1
+ log-adjacency-changes
+ network 75.92.210.4 0.0.0.3 area 1
+ network 75.92.210.20 0.0.0.3 area 0
+ network 75.92.210.12 0.0.0.3 area 1
+
+ISP_B
+
+en
+clock set 12:00:00 16 Jan 2026
+conf t
+hostname ISP_B
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+
+interface GigabitEthernet0/0/0
+ description DNS fele
+ ip address 8.8.8.1 255.255.255.0
+ duplex auto
+ speed auto
+no sh
+exit
+interface Serial0/1/0
+ description ISP_C fele
+ ip address 75.92.210.25 255.255.255.252
+ clock rate 4000000
+no sh
+exit
+interface Serial0/1/1
+ description ISP_A fele
+ ip address 75.92.210.22 255.255.255.252
+no sh
+exit
+interface Serial0/2/0
+ description Baja_irodak_routere fele
+ ip address 75.92.210.1 255.255.255.252
+ clock rate 4000000
+no sh
+exit
+
+
+
+router ospf 10
+ router-id 2.2.2.2
+ log-adjacency-changes
+ network 75.92.210.24 0.0.0.3 area 0
+ network 75.92.210.20 0.0.0.3 area 0
+ network 75.92.210.0 0.0.0.3 area 1
+ network 8.8.8.0 0.0.0.255 area 0
+
+
+en
+clock set 12:00:00 16 Jan 2026
+conf t
+hostname ISP_C
+enable secret Class123
+service password-encryption
+banner motd #Idegeneknek belépni tilos!#
+
+line console 0
+password Cisco123
+login
+logging synchronous
+exit
+
+line vty 0 15
+password Cisco123
+login
+exit
+
+interface Serial0/1/0
+ description RG_Router fele
+ ip address 75.92.210.9 255.255.255.252
+ clock rate 4000000
+no sh
+exit
+
+interface Serial0/1/1
+ description ISP_B fele
+ ip address 75.92.210.26 255.255.255.252
+no sh
+exit
+interface Serial0/2/0
+ description R_Debrecen fele
+ ip address 75.92.210.17 255.255.255.252
+ clock rate 4000000
+no sh
+exit
+
+router ospf 10
+ router-id 3.3.3.3
+ log-adjacency-changes
+ network 75.92.210.8 0.0.0.3 area 1
+ network 75.92.210.24 0.0.0.3 area 0
+ network 75.92.210.16 0.0.0.3 area 1
+
